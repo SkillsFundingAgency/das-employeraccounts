@@ -13,15 +13,11 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SFA.DAS.EAS.Infrastructure"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SFA.DAS.EAS.Domain", "SFA.DAS.EmployerApprenticeshipsService.Domain\SFA.DAS.EAS.Domain.csproj", "{EC415CDA-9294-4967-BD27-AA900985427D}"
 EndProject
-Project("{00D1A9C2-B5F0-4AF3-8072-F6C62B433612}") = "SFA.DAS.EAS.Employer_Account.Database", "SFA.DAS.EAS.Employer_Account.Database\SFA.DAS.EAS.Employer_Account.Database.sqlproj", "{927A0BEA-B043-4A03-9311-F49CB60541D5}"
-EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "PreReqs", "PreReqs", "{15DE899B-AD05-470D-B0F8-E5696141CA9A}"
 	ProjectSection(SolutionItems) = preProject
 		DevInstall.ps1 = DevInstall.ps1
 		GenCert.ps1 = GenCert.ps1
 	EndProjectSection
-EndProject
-Project("{00D1A9C2-B5F0-4AF3-8072-F6C62B433612}") = "SFA.DAS.EAS.Employer_Financial.Database", "SFA.DAS.EAS.Employer_Financial.Database\SFA.DAS.EAS.Employer_Financial.Database.sqlproj", "{6C145D4A-CBA9-439C-984E-0A5953CBE04D}"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "SFA.DAS.EAS.Account.Api.Client", "SFA.DAS.Account.Api.Client\SFA.DAS.EAS.Account.Api.Client.csproj", "{0F0122D6-36F6-4D6C-856E-3DAAE1B13464}"
 EndProject
@@ -82,7 +78,7 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Certificates", "Certificate
 		Certificates\localhost.pfx = Certificates\localhost.pfx
 	EndProjectSection
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SFA.DAS.EmployerAccounts.TestCommon", "SFA.DAS.EmployerAccounts.TestCommon\SFA.DAS.EmployerAccounts.TestCommon.csproj", "{87D578C3-4624-4260-8B19-0BC248117358}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "SFA.DAS.EmployerAccounts.TestCommon", "SFA.DAS.EmployerAccounts.TestCommon\SFA.DAS.EmployerAccounts.TestCommon.csproj", "{87D578C3-4624-4260-8B19-0BC248117358}"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "SFA.DAS.EmployerAccounts.ReadStore", "SFA.DAS.EmployerAccounts.ReadStore\SFA.DAS.EmployerAccounts.ReadStore\SFA.DAS.EmployerAccounts.ReadStore.csproj", "{51F0BA52-DCCD-4E6A-9F84-3BDFD501A06B}"
 EndProject
@@ -110,15 +106,6 @@ Global
 		{EC415CDA-9294-4967-BD27-AA900985427D}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{EC415CDA-9294-4967-BD27-AA900985427D}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{EC415CDA-9294-4967-BD27-AA900985427D}.Release|Any CPU.Build.0 = Release|Any CPU
-		{927A0BEA-B043-4A03-9311-F49CB60541D5}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{927A0BEA-B043-4A03-9311-F49CB60541D5}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{927A0BEA-B043-4A03-9311-F49CB60541D5}.Debug|Any CPU.Deploy.0 = Debug|Any CPU
-		{927A0BEA-B043-4A03-9311-F49CB60541D5}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{6C145D4A-CBA9-439C-984E-0A5953CBE04D}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{6C145D4A-CBA9-439C-984E-0A5953CBE04D}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{6C145D4A-CBA9-439C-984E-0A5953CBE04D}.Debug|Any CPU.Deploy.0 = Debug|Any CPU
-		{6C145D4A-CBA9-439C-984E-0A5953CBE04D}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{6C145D4A-CBA9-439C-984E-0A5953CBE04D}.Release|Any CPU.Deploy.0 = Release|Any CPU
 		{0F0122D6-36F6-4D6C-856E-3DAAE1B13464}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{0F0122D6-36F6-4D6C-856E-3DAAE1B13464}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{0F0122D6-36F6-4D6C-856E-3DAAE1B13464}.Release|Any CPU.ActiveCfg = Release|Any CPU
