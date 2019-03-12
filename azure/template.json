@@ -25,10 +25,8 @@
     }
   },
   "variables": {
-    "deploymentUrlBase":
-      "https://raw.githubusercontent.com/SkillsFundingAgency/das-platform-building-blocks/master/templates/",
-    "resourceNamePrefix":
-      "[toLower(concat('das-', parameters('resourceEnvironmentName'),'-', parameters('serviceName')))]",
+    "deploymentUrlBase": https://raw.githubusercontent.com/SkillsFundingAgency/das-platform-building-blocks/master/templates/",
+    "resourceNamePrefix": "[toLower(concat('das-', parameters('resourceEnvironmentName'),'-', parameters('serviceName')))]",
     "employerAccountsWebAppServiceName": "[concat(variables('resourceNamePrefix'), 'web-as')]",
     "employerAccountsApiAppServiceName": "[concat(variables('resourceNamePrefix'), 'api-as')]"
   },
@@ -88,10 +86,6 @@
                 "value": "[reference('employer-accounts-web-application-insights').outputs.InstrumentationKey.value]"
               },
               {
-                "name": "AuthType",
-                "value": "employer"
-              },
-              {
                 "name": "WEBSITE_LOAD_CERTIFICATES",
                 "value": "[parameters('certificateThumbprintsToLoad')]"
               },
@@ -113,13 +107,6 @@
               }
             ]
           },
-          "customHostName": {
-            "value": ""
-          },
-          "certificateThumbprint": {
-            "value": ""
-          }
-
           "customHostName": {
             "value": ""
           },
@@ -182,10 +169,6 @@
               {
                 "name": "APPINSIGHTS_INSTRUMENTATIONKEY",
                 "value": "[reference('employer-accounts-api-application-insights').outputs.InstrumentationKey.value]"
-              },
-              {
-                "name": "AuthType",
-                "value": "provider"
               },
               {
                 "name": "LoggingRedisConnectionString",
