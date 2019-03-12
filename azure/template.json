@@ -22,6 +22,18 @@
     },
     "certificateThumbprintsToLoad": {
       "type": "string"
+    },
+    "loggingRedisConnectionString": {
+      "type": "securestring"
+    },
+    "loggingRedisKey": {
+      "type": "string"
+    }, 
+    "storageConnectionString": {
+      "type": "string"
+    },
+    "tokenCertificateThumbprint": {
+      "type": "string"
     }
   },
   "variables": {
