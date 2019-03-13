@@ -19,7 +19,6 @@ using SFA.DAS.HashingService;
 using SFA.DAS.NServiceBus;
 using SFA.DAS.Validation;
 using Entity = SFA.DAS.Audit.Types.Entity;
-using SFA.DAS.Hashing;
 
 
 namespace SFA.DAS.EmployerAccounts.Commands.CreateLegalEntity

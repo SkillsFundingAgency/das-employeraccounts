@@ -1,7 +1,6 @@
 ﻿using System.Threading.Tasks;
 using MediatR;
 using SFA.DAS.EmployerAccounts.Data;
-using SFA.DAS.EmployerAccounts.Data;
 using SFA.DAS.NLog.Logger;
 
 namespace SFA.DAS.EmployerAccounts.Queries.GetTeamUser
