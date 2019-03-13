@@ -17,6 +17,9 @@
     "sharedResourceGroup": {
       "type": "string"
     },
+    "sharedSqlServerName": {
+      "type": "string"
+    },
     "configurationStorageConnectionString": {
       "type": "securestring"
     },
@@ -35,12 +38,31 @@
     "tokenCertificateThumbprint": {
       "type": "string"
     }
+    "databaseSkuName": {
+      "type": "string",
+      "defaultValue": "S0"
+    },
+    "databaseTier": {
+      "type": "string",
+      "defaultValue": "Standard"
+    },
+    "logAnalyticsSubscriptionId": {
+      "type": "string",
+      "defaultValue": "[subscription().subscriptionId]"
+    },
+    "logAnalyticsResourceGroup": {
+      "type": "string"
+    },
+    "logAnalyticsWorkspaceName": {
+      "type": "string"
+    },
   },
   "variables": {
     "deploymentUrlBase": https://raw.githubusercontent.com/SkillsFundingAgency/das-platform-building-blocks/master/templates/",
     "resourceNamePrefix": "[toLower(concat('das-', parameters('resourceEnvironmentName'),'-', parameters('serviceName')))]",
     "employerAccountsWebAppServiceName": "[concat(variables('resourceNamePrefix'), 'web-as')]",
-    "employerAccountsApiAppServiceName": "[concat(variables('resourceNamePrefix'), 'api-as')]"
+    "employerAccountsApiAppServiceName": "[concat(variables('resourceNamePrefix'), 'api-as')]",
+    "employerAccountsDatabaseName": "[concat(variables('resourceNamePrefix'), '-db')]"
   },
   "resources": [
     {
@@ -200,9 +222,49 @@
           }
         }
       }
+    },
+    {
+      "apiVersion": "2017-05-10",
+      "name": "employer-accounts-sql-database",
+      "type": "Microsoft.Resources/deployments",
+      "resourceGroup": "[parameters('sharedResourceGroup')]",
+      "properties": {
+        "mode": "Incremental",
+        "templateLink": {
+          "uri": "[concat(variables('deploymentUrlBase'),'sql-database.json')]",
+          "contentVersion": "1.0.0.0"
+        },
+        "parameters": {
+          "employerAccountsDatabaseName": {
+            "value": "[variables('employerAccountsDatabaseName')]"
+          },
+          "sqlServerName": {
+            "value": "[parameters('sharedSqlServerName')]"
+          },
+          "databaseSkuName": {
+            "value": "[parameters('databaseSkuName')]"
+          },
+          "databaseTier": {
+            "value": "[parameters('databaseTier')]"
+          },
+          "logAnalyticsSubscriptionId": {
+            "value": "[parameters('logAnalyticsSubscriptionId')]"
+          },
+          "logAnalyticsResourceGroup": {
+            "value": "[parameters('logAnalyticsResourceGroup')]"
+          },
+          "logAnalyticsWorkspaceName": {
+            "value": "[parameters('logAnalyticsWorkspaceName')]"
+          }
+        }
+      }
     }
   ],
   "outputs": {
+    "employerAccountsDatabaseName": {
+      "type": "string",
+      "value": "[variables('employerAccountsDatabaseName')]"
+    },
     "employerAccountsWebAppServiceName": {
       "type": "string",
       "value": "[variables('employerAccountsWebAppServiceName')]"
