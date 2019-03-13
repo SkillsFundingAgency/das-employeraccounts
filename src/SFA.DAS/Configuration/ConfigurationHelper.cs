@@ -2,6 +2,7 @@
 using System.Threading.Tasks;
 using Microsoft.Azure;
 using SFA.DAS.Configuration.AzureTableStorage;
+using StackExchange.Redis;
 
 namespace SFA.DAS.Configuration
 {
