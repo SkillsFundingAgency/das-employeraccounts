@@ -25,6 +25,12 @@ steps:
   inputs:
     updateAssemblyInfo: true
     
+- task: NuGetToolInstaller@0
+  displayName: 'Use NuGet 4.x'
+  inputs:
+    versionSpec: 4.x
+    checkLatest: true
+
 - task: NuGetCommand@2
   displayName: 'NuGet restore'
   inputs:
