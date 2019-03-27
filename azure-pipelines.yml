@@ -20,6 +20,11 @@ pool:
   - visualstudio
 
 steps:
+- task: gittools.gitversion.gitversion-task.GitVersion@3
+  displayName: GitVersion
+  inputs:
+    updateAssemblyInfo: true
+    
 - task: BatchScript@1
   displayName: 'Run script src/RunBuild.bat'
   inputs:
