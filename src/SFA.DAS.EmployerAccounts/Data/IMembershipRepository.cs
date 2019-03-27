@@ -6,7 +6,7 @@ namespace SFA.DAS.EmployerAccounts.Data
 {
     public interface IMembershipRepository
     {
-        Task Create(long userId, long accountId, short roleId);
+        Task Create(long userId, long accountId, Role role);
         Task<TeamMember> Get(long accountId, string email);
         Task<Membership> Get(long userId, long accountId);
         Task Remove(long userId, long accountId);
