@@ -25,6 +25,12 @@ steps:
   inputs:
     updateAssemblyInfo: true
     
+- task: NuGetCommand@2
+  displayName: 'NuGet restore'
+  inputs:
+    restoreSolution: 'src\SFA.DAS.EmployerAccounts.sln'
+    noCache: true
+
 - task: VSBuild@1
   displayName: 'Build solution'
   inputs:
