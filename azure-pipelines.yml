@@ -20,7 +20,81 @@ pool:
   - visualstudio
 
 steps:
-- script: src/RunBuild.bat "Release"
-  displayName: Run build script
-  
+- task: BatchScript@1
+  displayName: 'Run script src/RunBuild.bat'
+  inputs:
+    filename: src/RunBuild.bat
+    arguments: '"Release"'
+    modifyEnvironment: false
+    workingFolder: src/
+
+- task: PublishTestResults@1
+  displayName: 'Publish Test Results src/TestResult.xml'
+  inputs:
+    testRunner: NUnit
+    testResultsFiles: src/TestResult.xml
+    testRunTitle: 'das-employeraccounts'
+  condition: succeededOrFailed()
+
+- task: DotNetCoreCLI@2
+  displayName: 'dotnet pack'
+  inputs:
+    command: pack
+    packagesToPack: 'src/SFA.DAS.EmployerAccounts.Api.Client/SFA.DAS.EmployerAccounts.Api.Client.csproj;src/SFA.DAS.EmployerAccounts.Messages/SFA.DAS.EmployerAccounts.Messages.csproj;src/SFA.DAS.EmployerAccounts.Api.Client/SFA.DAS.EmployerAccounts.Api.Client.csproj;src/SFA.DAS.EmployerAccounts.ReadStore/SFA.DAS.EmployerAccounts.ReadStore/SFA.DAS.EmployerAccounts.ReadStore.csproj;src/SFA.DAS.EmployerAccounts.Types/SFA.DAS.EmployerAccounts.Types.csproj'
+    versioningScheme: byBuildNumber
+
+- task: CopyFiles@2
+  displayName: 'Copy Files to: $(Build.ArtifactStagingDirectory)'
+  inputs:
+    SourceFolder: src/
+    Contents: |
+     Host/*.Host.zip
+     WebApps/*.zip
+     WebJob\*.zip
+     **\*.dacpac
+     **\Script.PreDeployment1.sql
+     **\Database.publish.xml
+     *.AcceptanceTests/bin/Release/**/*.*
+     Tools/Nuget/NuGet.exe
+     RunBuild.bat
+     AzureTopicConfigurationStrucuture.json
+     **/Extensions/*
+     **/Bin/Release/*.nupkg
+     *.fsx
+    TargetFolder: '$(Build.ArtifactStagingDirectory)'
+
+- task: CopyFiles@2
+  displayName: 'Copy Files to: $(Build.ArtifactStagingDirectory)'
+  inputs:
+    Contents: 'azure\**\*'
+    TargetFolder: '$(Build.ArtifactStagingDirectory)'
+
+- task: PublishBuildArtifacts@1
+  displayName: 'Publish Artifact: Publish'
+  inputs:
+    ArtifactName: Publish
+
+- task: CopyPublishBuildArtifacts@1
+  displayName: 'Copy Publish Artifact: Publish'
+  inputs:
+    CopyRoot: src/
+    Contents: |
+     WebJob\*.zip
+     **\*.dacpac
+     **\Script.PreDeployment1.sql
+     **\Database.publish.xml
+     VSTSConfig.ps1
+     **/Bin/Release/*.nupkg
+     /Deploy/parameters.json
+     /Deploy/template.json
+     *.AcceptanceTests/bin/Release/**/*.*
+     Tools/Nuget/NuGet.exe
+     Tools/FAKE/tools/*.*
+     *.fsx
+     RunBuild.bat
+     AzureTopicConfigurationStrucuture.json
+     **/Extensions/*
+    ArtifactName: Publish
+    ArtifactType: Container
+  enabled: false
   
