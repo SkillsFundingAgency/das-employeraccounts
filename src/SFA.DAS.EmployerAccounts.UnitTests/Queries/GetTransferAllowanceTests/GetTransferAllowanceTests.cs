@@ -81,7 +81,7 @@ namespace SFA.DAS.EmployerAccounts.UnitTests.Queries.GetTransferAllowanceTests
         [Test]
         public async Task Handle_WhenMakingAValidCall_ShouldReturnCorrectTransferAllowancePercentage()
         {
-            await RunAsync(
+            await TestAsync(
                      f => f.WithTransferAllowance(f.TransferAllowance)
                            .WithNoTransferPayments(),
                      f => f.Handle(f.SenderAccountId),
