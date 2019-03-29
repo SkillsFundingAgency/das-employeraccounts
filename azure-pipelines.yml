@@ -46,3 +46,9 @@ steps:
     platform: '$(buildPlatform)'
     configuration: '$(buildConfiguration)'
     clean: true
+
+- task: PublishBuildArtifacts@1
+  displayName: 'Publish Artifact: SFA.DAS.EmployerAccounts'
+  inputs:
+    PathtoPublish: '$(build.artifactstagingdirectory)'
+    ArtifactName: SFA.DAS.EmployerAccounts
