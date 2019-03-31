@@ -48,10 +48,6 @@ Target "Build And Zip Web App Projects" ( fun _ ->
                             ("ToolsVersion","14");
                         ]
 
-        !! (@".\**\SFA.DAS.EmployerFinance.Web.csproj")
-            |> MSBuildReleaseExt null properties "Build"
-            |> Log "Build-Output: "
-
         !! (@".\**\SFA.DAS.EmployerAccounts.Web.csproj")
             |> MSBuildReleaseExt null properties "Build"
             |> Log "Build-Output: "
@@ -59,14 +55,10 @@ Target "Build And Zip Web App Projects" ( fun _ ->
         !! (@".\**\SFA.DAS.EmployerAccounts.Api.csproj")
             |> MSBuildReleaseExt null properties "Build"
             |> Log "Build-Output: "
-
-        !! (@".\**\SFA.DAS.EmployerFinance.Api.csproj")
-            |> MSBuildReleaseExt null properties "Build"
-            |> Log "Build-Output: "
 )
 
 Target "Restore Solution Packages" (fun _ ->
-     "./SFA.DAS.EAS.sln"
+     "./SFA.DAS.EmployerAccounts.sln"
      |> RestoreMSSolutionPackages (fun p ->
          { p with
              OutputPath = ".\\packages"

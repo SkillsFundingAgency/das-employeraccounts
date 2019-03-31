@@ -1,0 +1,277 @@
+{
+  "$schema": "https://schema.management.azure.com/schemas/2015-01-01/deploymentTemplate.json#",
+  "contentVersion": "1.0.0.0",
+  "parameters": {
+    "resourceEnvironmentName": {
+      "type": "string"
+    },
+    "serviceName": {
+      "type": "string"
+    },
+    "environmentName": {
+      "type": "string"
+    },
+    "sharedAppServicePlanName": {
+      "type": "string"
+    },
+    "sharedResourceGroup": {
+      "type": "string"
+    },
+    "sharedSqlServerName": {
+      "type": "string"
+    },
+    "configurationStorageConnectionString": {
+      "type": "securestring"
+    },
+    "certificateThumbprintsToLoad": {
+      "type": "string"
+    },
+    "loggingRedisConnectionString": {
+      "type": "securestring"
+    },
+    "loggingRedisKey": {
+      "type": "string"
+    }, 
+    "storageConnectionString": {
+      "type": "string"
+    },
+    "tokenCertificateThumbprint": {
+      "type": "string"
+    }
+    "databaseSkuName": {
+      "type": "string",
+      "defaultValue": "S0"
+    },
+    "databaseTier": {
+      "type": "string",
+      "defaultValue": "Standard"
+    },
+    "logAnalyticsSubscriptionId": {
+      "type": "string",
+      "defaultValue": "[subscription().subscriptionId]"
+    },
+    "logAnalyticsResourceGroup": {
+      "type": "string"
+    },
+    "logAnalyticsWorkspaceName": {
+      "type": "string"
+    },
+  },
+  "variables": {
+    "deploymentUrlBase": "https://raw.githubusercontent.com/SkillsFundingAgency/das-platform-building-blocks/master/templates/",
+    "resourceNamePrefix": "[toLower(concat('das-', parameters('resourceEnvironmentName'),'-', parameters('serviceName')))]",
+    "employerAccountsWebAppServiceName": "[concat(variables('resourceNamePrefix'), 'web-as')]",
+    "employerAccountsApiAppServiceName": "[concat(variables('resourceNamePrefix'), 'api-as')]",
+    "employerAccountsDatabaseName": "[concat(variables('resourceNamePrefix'), '-db')]"
+  },
+  "resources": [
+    {
+      "apiVersion": "2017-05-10",
+      "name": "employer-accounts-web-application-insights",
+      "type": "Microsoft.Resources/deployments",
+      "properties": {
+        "mode": "Incremental",
+        "templateLink": {
+          "uri": "[concat(variables('deploymentUrlBase'),'application-insights.json')]",
+          "contentVersion": "1.0.0.0"
+        },
+        "parameters": {
+          "appInsightsName": {
+            "value": "[variables('employerAccountsWebAppServiceName')]"
+          },
+          "attachedService": {
+            "value": "[variables('employerAccountsWebAppServiceName')]"
+          }
+        }
+      }
+    },
+    {
+      "apiVersion": "2017-05-10",
+      "name": "employer-accounts-web-app-service",
+      "type": "Microsoft.Resources/deployments",
+      "properties": {
+        "mode": "Incremental",
+        "templateLink": {
+          "uri": "[concat(variables('deploymentUrlBase'),'app-service.json')]",
+          "contentVersion": "1.0.0.0"
+        },
+        "parameters": {
+          "appServiceName": {
+            "value": "[variables('employerAccountsWebAppServiceName')]"
+          },
+          "appServicePlanName": {
+            "value": "[parameters('sharedAppServicePlanName')]"
+          },
+          "appServicePlanResourceGroup": {
+            "value": "[parameters('sharedResourceGroup')]"
+          },
+          "appServiceAppSettings": {
+            "value": [
+              {
+                "name": "Environment",
+                "value": "[parameters('environmentName')]"
+              },
+              {
+                "name": "ConfigurationStorageConnectionString",
+                "value": "[parameters('configurationStorageConnectionString')]"
+              },
+              {
+                "name": "APPINSIGHTS_INSTRUMENTATIONKEY",
+                "value": "[reference('employer-accounts-web-application-insights').outputs.InstrumentationKey.value]"
+              },
+              {
+                "name": "WEBSITE_LOAD_CERTIFICATES",
+                "value": "[parameters('certificateThumbprintsToLoad')]"
+              },
+              {
+                "name": "LoggingRedisConnectionString",
+                "value": "[parameters('loggingRedisConnectionString')]"
+              },
+              {
+                "name": "LoggingRedisKey",
+                "value": "[parameters('loggingRedisKey')]"
+              },
+              {
+                "name": "StorageConnectionString",
+                "value": "[parameters('storageConnectionString')]"
+              },
+              {
+                "name": "TokenCertificateThumbprint",
+                "value": "[parameters('tokenCertificateThumbprint')]"
+              }
+            ]
+          },
+          "customHostName": {
+            "value": ""
+          },
+          "certificateThumbprint": {
+            "value": ""
+          }
+        }
+      }
+    },
+    {
+      "apiVersion": "2017-05-10",
+      "name": "employer-accounts-api-application-insights",
+      "type": "Microsoft.Resources/deployments",
+      "properties": {
+        "mode": "Incremental",
+        "templateLink": {
+          "uri": "[concat(variables('deploymentUrlBase'),'application-insights.json')]",
+          "contentVersion": "1.0.0.0"
+        },
+        "parameters": {
+          "appInsightsName": {
+            "value": "[variables('employerAccountsApiAppServiceName')]"
+          },
+          "attachedService": {
+            "value": "[variables('employerAccountsApiAppServiceName')]"
+          }
+        }
+      }
+    },
+    {
+      "apiVersion": "2017-05-10",
+      "name": "employer-accounts-api-app-service",
+      "type": "Microsoft.Resources/deployments",
+      "properties": {
+        "mode": "Incremental",
+        "templateLink": {
+          "uri": "[concat(variables('deploymentUrlBase'),'app-service.json')]",
+          "contentVersion": "1.0.0.0"
+        },
+        "parameters": {
+          "appServiceName": {
+            "value": "[variables('employerAccountsApiAppServiceName')]"
+          },
+          "appServicePlanName": {
+            "value": "[parameters('sharedAppServicePlanName')]"
+          },
+          "appServicePlanResourceGroup": {
+            "value": "[parameters('sharedResourceGroup')]"
+          },
+          "appServiceAppSettings": {
+            "value": [
+              {
+                "name": "Environment",
+                "value": "[parameters('environmentName')]"
+              },
+              {
+                "name": "ConfigurationStorageConnectionString",
+                "value": "[parameters('configurationStorageConnectionString')]"
+              },
+              {
+                "name": "APPINSIGHTS_INSTRUMENTATIONKEY",
+                "value": "[reference('employer-accounts-api-application-insights').outputs.InstrumentationKey.value]"
+              },
+              {
+                "name": "LoggingRedisConnectionString",
+                "value": "[parameters('loggingRedisConnectionString')]"
+              },
+              {
+                "name": "LoggingRedisKey",
+                "value": "[parameters('loggingRedisKey')]"
+              }
+            ]
+          },
+          "customHostName": {
+            "value": ""
+          },
+          "certificateThumbprint": {
+            "value": ""
+          }
+        }
+      }
+    },
+    {
+      "apiVersion": "2017-05-10",
+      "name": "employer-accounts-sql-database",
+      "type": "Microsoft.Resources/deployments",
+      "resourceGroup": "[parameters('sharedResourceGroup')]",
+      "properties": {
+        "mode": "Incremental",
+        "templateLink": {
+          "uri": "[concat(variables('deploymentUrlBase'),'sql-database.json')]",
+          "contentVersion": "1.0.0.0"
+        },
+        "parameters": {
+          "employerAccountsDatabaseName": {
+            "value": "[variables('employerAccountsDatabaseName')]"
+          },
+          "sqlServerName": {
+            "value": "[parameters('sharedSqlServerName')]"
+          },
+          "databaseSkuName": {
+            "value": "[parameters('databaseSkuName')]"
+          },
+          "databaseTier": {
+            "value": "[parameters('databaseTier')]"
+          },
+          "logAnalyticsSubscriptionId": {
+            "value": "[parameters('logAnalyticsSubscriptionId')]"
+          },
+          "logAnalyticsResourceGroup": {
+            "value": "[parameters('logAnalyticsResourceGroup')]"
+          },
+          "logAnalyticsWorkspaceName": {
+            "value": "[parameters('logAnalyticsWorkspaceName')]"
+          }
+        }
+      }
+    }
+  ],
+  "outputs": {
+    "employerAccountsDatabaseName": {
+      "type": "string",
+      "value": "[variables('employerAccountsDatabaseName')]"
+    },
+    "employerAccountsWebAppServiceName": {
+      "type": "string",
+      "value": "[variables('employerAccountsWebAppServiceName')]"
+    },
+    "employerAccountsApiAppServiceName": {
+      "type": "string",
+      "value": "[variables('employerAccountsApiAppServiceName')]"
+    }
+  }
+}

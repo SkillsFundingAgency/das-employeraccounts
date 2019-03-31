@@ -19,10 +19,6 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "PreReqs", "PreReqs", "{15DE
 		GenCert.ps1 = GenCert.ps1
 	EndProjectSection
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "SFA.DAS.EAS.Account.Api.Client", "SFA.DAS.Account.Api.Client\SFA.DAS.EAS.Account.Api.Client.csproj", "{0F0122D6-36F6-4D6C-856E-3DAAE1B13464}"
-EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "SFA.DAS.EAS.Account.Api.Types", "SFA.DAS.EAS.Account.Api.Types\SFA.DAS.EAS.Account.Api.Types.csproj", "{8AFB0BBE-1E53-488C-A971-D236DF9EAA77}"
-EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SFA.DAS.EmployerAccounts.Events", "SFA.DAS.EmployerAccounts.Events\SFA.DAS.EmployerAccounts.Events.csproj", "{0E46510C-0D06-4B63-8E17-B9037DB7C7ED}"
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "AzureConfiguration", "AzureConfiguration", "{68328FF1-53F2-4737-A983-7E2B67179E17}"
@@ -106,14 +102,6 @@ Global
 		{EC415CDA-9294-4967-BD27-AA900985427D}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{EC415CDA-9294-4967-BD27-AA900985427D}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{EC415CDA-9294-4967-BD27-AA900985427D}.Release|Any CPU.Build.0 = Release|Any CPU
-		{0F0122D6-36F6-4D6C-856E-3DAAE1B13464}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{0F0122D6-36F6-4D6C-856E-3DAAE1B13464}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{0F0122D6-36F6-4D6C-856E-3DAAE1B13464}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{0F0122D6-36F6-4D6C-856E-3DAAE1B13464}.Release|Any CPU.Build.0 = Release|Any CPU
-		{8AFB0BBE-1E53-488C-A971-D236DF9EAA77}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{8AFB0BBE-1E53-488C-A971-D236DF9EAA77}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{8AFB0BBE-1E53-488C-A971-D236DF9EAA77}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{8AFB0BBE-1E53-488C-A971-D236DF9EAA77}.Release|Any CPU.Build.0 = Release|Any CPU
 		{0E46510C-0D06-4B63-8E17-B9037DB7C7ED}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{0E46510C-0D06-4B63-8E17-B9037DB7C7ED}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{0E46510C-0D06-4B63-8E17-B9037DB7C7ED}.Release|Any CPU.ActiveCfg = Release|Any CPU
