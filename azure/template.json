@@ -47,6 +47,9 @@
     },
     "sharedKeyVaultResourceGroup": {
       "type": "string"
+    },
+    "idpTokenCertificateName": {
+      "type": "string"
     }
   },
   "variables": {
@@ -155,6 +158,35 @@
       },
       "dependsOn": [
         "ui-ssl-cert"
+      ]
+    },
+    {
+      "apiVersion": "2017-08-01",
+      "name": "token-ssl-cert",
+      "type": "Microsoft.Resources/deployments",
+      "properties": {
+        "mode": "Incremental",
+        "templateLink": {
+          "uri": "[concat(variables('deploymentUrlBase'),'app-service-certificate.json')]",
+          "contentVersion": "1.0.0.0"
+        },
+        "parameters": {
+          "keyVaultCertificateName": {
+            "value": "[parameters('idpTokenCertificateName')]"
+          },
+          "keyVaultName": {
+            "value": "[parameters('sharedKeyVaultName')]"
+          },
+          "keyVaultResourceGroup": {
+            "value": "[parameters('sharedKeyVaultResourceGroup')]"
+          },
+          "serverFarmId": {
+            "value": "[reference('web-app-service-plan').outputs.appServicePlanId.value]"
+          }
+        }
+      },
+      "dependsOn": [
+        "api-ssl-cert"
       ]
     },
     {
