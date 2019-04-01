@@ -11,63 +11,58 @@
     "environmentName": {
       "type": "string"
     },
-    "sharedAppServicePlanName": {
-      "type": "string"
-    },
-    "sharedResourceGroup": {
-      "type": "string"
-    },
-    "sharedSqlServerName": {
-      "type": "string"
-    },
     "configurationStorageConnectionString": {
-      "type": "securestring"
-    },
-    "certificateThumbprintsToLoad": {
       "type": "string"
     },
     "loggingRedisConnectionString": {
-      "type": "securestring"
+      "type": "string"
     },
     "loggingRedisKey": {
       "type": "string"
-    }, 
+    },
     "storageConnectionString": {
       "type": "string"
     },
     "tokenCertificateThumbprint": {
       "type": "string"
+    },
+    "uiCustomHostname": {
+      "type": "string",
+      "defaultValue": ""
+    },
+    "uiCertificateName": {
+      "type": "string",
+      "defaultValue": ""
+    },
+    "apiCustomHostname": {
+      "type": "string",
+      "defaultValue": ""
+    },
+    "apiCertificateName": {
+      "type": "string",
+      "defaultValue": ""
+    },
+    "sharedKeyVaultName": {
+      "type": "string"
+    },
+    "sharedKeyVaultResourceGroup": {
+      "type": "string"
     }
-    "databaseSkuName": {
-      "type": "string",
-      "defaultValue": "S0"
-    },
-    "databaseTier": {
-      "type": "string",
-      "defaultValue": "Standard"
-    },
-    "logAnalyticsSubscriptionId": {
-      "type": "string",
-      "defaultValue": "[subscription().subscriptionId]"
-    },
-    "logAnalyticsResourceGroup": {
-      "type": "string"
-    },
-    "logAnalyticsWorkspaceName": {
-      "type": "string"
-    },
   },
   "variables": {
     "deploymentUrlBase": "https://raw.githubusercontent.com/SkillsFundingAgency/das-platform-building-blocks/master/templates/",
     "resourceNamePrefix": "[toLower(concat('das-', parameters('resourceEnvironmentName'),'-', parameters('serviceName')))]",
-    "employerAccountsWebAppServiceName": "[concat(variables('resourceNamePrefix'), 'web-as')]",
-    "employerAccountsApiAppServiceName": "[concat(variables('resourceNamePrefix'), 'api-as')]",
-    "employerAccountsDatabaseName": "[concat(variables('resourceNamePrefix'), '-db')]"
+    "uiAppServiceName": "[concat(variables('resourceNamePrefix'), 'ui-as')]",
+    "apiAppServiceName": "[concat(variables('resourceNamePrefix'), 'api-as')]",
+    "workerAppServiceName": "[concat(variables('resourceNamePrefix'), 'wkr-as')]",
+    "webAppServicePlanName": "[concat(variables('resourceNamePrefix'), '-asp')]",
+    "workerAppServicePlanName": "[concat(variables('resourceNamePrefix'), 'wkr-asp')]",
+    "accountsCosmosDbName": "[concat(variables('resourceNamePrefix'), '-cdb')]"
   },
   "resources": [
     {
-      "apiVersion": "2017-05-10",
-      "name": "employer-accounts-web-application-insights",
+      "apiVersion": "2017-08-01",
+      "name": "ui-app-insights",
       "type": "Microsoft.Resources/deployments",
       "properties": {
         "mode": "Incremental",
@@ -77,17 +72,94 @@
         },
         "parameters": {
           "appInsightsName": {
-            "value": "[variables('employerAccountsWebAppServiceName')]"
+            "value": "[variables('uiAppServiceName')]"
           },
           "attachedService": {
-            "value": "[variables('employerAccountsWebAppServiceName')]"
+            "value": "[variables('uiAppServiceName')]"
           }
         }
       }
     },
     {
-      "apiVersion": "2017-05-10",
-      "name": "employer-accounts-web-app-service",
+      "apiVersion": "2017-08-01",
+      "name": "api-app-insights",
+      "type": "Microsoft.Resources/deployments",
+      "properties": {
+        "mode": "Incremental",
+        "templateLink": {
+          "uri": "[concat(variables('deploymentUrlBase'),'application-insights.json')]",
+          "contentVersion": "1.0.0.0"
+        },
+        "parameters": {
+          "appInsightsName": {
+            "value": "[variables('apiAppServiceName')]"
+          },
+          "attachedService": {
+            "value": "[variables('apiAppServiceName')]"
+          }
+        }
+      }
+    },
+    {
+      "apiVersion": "2017-08-01",
+      "name": "ui-ssl-cert",
+      "condition": "[greater(length(parameters('uiCertificateName')), 0)]",
+      "type": "Microsoft.Resources/deployments",
+      "properties": {
+        "mode": "Incremental",
+        "templateLink": {
+          "uri": "[concat(variables('deploymentUrlBase'),'app-service-certificate.json')]",
+          "contentVersion": "1.0.0.0"
+        },
+        "parameters": {
+          "keyVaultCertificateName": {
+            "value": "[parameters('uiCertificateName')]"
+          },
+          "keyVaultName": {
+            "value": "[parameters('sharedKeyVaultName')]"
+          },
+          "keyVaultResourceGroup": {
+            "value": "[parameters('sharedKeyVaultResourceGroup')]"
+          },
+          "serverFarmId": {
+            "value": "[reference('web-app-service-plan').outputs.appServicePlanId.value]"
+          }
+        }
+      }
+    },
+    {
+      "apiVersion": "2017-08-01",
+      "name": "api-ssl-cert",
+      "condition": "[greater(length(parameters('apiCertificateName')), 0)]",
+      "type": "Microsoft.Resources/deployments",
+      "properties": {
+        "mode": "Incremental",
+        "templateLink": {
+          "uri": "[concat(variables('deploymentUrlBase'),'app-service-certificate.json')]",
+          "contentVersion": "1.0.0.0"
+        },
+        "parameters": {
+          "keyVaultCertificateName": {
+            "value": "[parameters('apiCertificateName')]"
+          },
+          "keyVaultName": {
+            "value": "[parameters('sharedKeyVaultName')]"
+          },
+          "keyVaultResourceGroup": {
+            "value": "[parameters('sharedKeyVaultResourceGroup')]"
+          },
+          "serverFarmId": {
+            "value": "[reference('web-app-service-plan').outputs.appServicePlanId.value]"
+          }
+        }
+      },
+      "dependsOn": [
+        "ui-ssl-cert"
+      ]
+    },
+    {
+      "apiVersion": "2017-08-01",
+      "name": "ui-app-service",
       "type": "Microsoft.Resources/deployments",
       "properties": {
         "mode": "Incremental",
@@ -97,32 +169,16 @@
         },
         "parameters": {
           "appServiceName": {
-            "value": "[variables('employerAccountsWebAppServiceName')]"
+            "value": "[variables('uiAppServiceName')]"
           },
           "appServicePlanName": {
-            "value": "[parameters('sharedAppServicePlanName')]"
+            "value": "[variables('webAppServicePlanName')]"
           },
           "appServicePlanResourceGroup": {
-            "value": "[parameters('sharedResourceGroup')]"
+            "value": "[resourceGroup().name]"
           },
           "appServiceAppSettings": {
             "value": [
-              {
-                "name": "Environment",
-                "value": "[parameters('environmentName')]"
-              },
-              {
-                "name": "ConfigurationStorageConnectionString",
-                "value": "[parameters('configurationStorageConnectionString')]"
-              },
-              {
-                "name": "APPINSIGHTS_INSTRUMENTATIONKEY",
-                "value": "[reference('employer-accounts-web-application-insights').outputs.InstrumentationKey.value]"
-              },
-              {
-                "name": "WEBSITE_LOAD_CERTIFICATES",
-                "value": "[parameters('certificateThumbprintsToLoad')]"
-              },
               {
                 "name": "LoggingRedisConnectionString",
                 "value": "[parameters('loggingRedisConnectionString')]"
@@ -132,8 +188,24 @@
                 "value": "[parameters('loggingRedisKey')]"
               },
               {
+                "name": "ConfigurationStorageConnectionString",
+                "value": "[parameters('configurationStorageConnectionString')]"
+              },
+              {
+                "name": "EnvironmentName",
+                "value": "[parameters('environmentName')]"
+              },
+              {
                 "name": "StorageConnectionString",
                 "value": "[parameters('storageConnectionString')]"
+              },
+              {
+                "name": "InstrumentationKey",
+                "value": "[reference('ui-app-insights').outputs.InstrumentationKey.value]"
+              },
+              {
+                "name": "WEBSITE_LOAD_CERTIFICATES",
+                "value": "[parameters('tokenCertificateThumbprint')]"
               },
               {
                 "name": "TokenCertificateThumbprint",
@@ -142,37 +214,20 @@
             ]
           },
           "customHostName": {
-            "value": ""
+            "value": "[parameters('uiCustomHostname')]"
           },
           "certificateThumbprint": {
-            "value": ""
+            "value": "[if(greater(length(parameters('uiCertificateName')), 0), reference('ui-ssl-cert').outputs.certificateThumbprint.value, '')]"
           }
         }
-      }
+      },
+      "dependsOn": [
+        "web-app-service-plan"
+      ]
     },
     {
-      "apiVersion": "2017-05-10",
-      "name": "employer-accounts-api-application-insights",
-      "type": "Microsoft.Resources/deployments",
-      "properties": {
-        "mode": "Incremental",
-        "templateLink": {
-          "uri": "[concat(variables('deploymentUrlBase'),'application-insights.json')]",
-          "contentVersion": "1.0.0.0"
-        },
-        "parameters": {
-          "appInsightsName": {
-            "value": "[variables('employerAccountsApiAppServiceName')]"
-          },
-          "attachedService": {
-            "value": "[variables('employerAccountsApiAppServiceName')]"
-          }
-        }
-      }
-    },
-    {
-      "apiVersion": "2017-05-10",
-      "name": "employer-accounts-api-app-service",
+      "apiVersion": "2017-08-01",
+      "name": "api-app-service",
       "type": "Microsoft.Resources/deployments",
       "properties": {
         "mode": "Incremental",
@@ -182,28 +237,16 @@
         },
         "parameters": {
           "appServiceName": {
-            "value": "[variables('employerAccountsApiAppServiceName')]"
+            "value": "[variables('apiAppServiceName')]"
           },
           "appServicePlanName": {
-            "value": "[parameters('sharedAppServicePlanName')]"
+            "value": "[variables('webAppServicePlanName')]"
           },
           "appServicePlanResourceGroup": {
-            "value": "[parameters('sharedResourceGroup')]"
+            "value": "[resourceGroup().name]"
           },
           "appServiceAppSettings": {
             "value": [
-              {
-                "name": "Environment",
-                "value": "[parameters('environmentName')]"
-              },
-              {
-                "name": "ConfigurationStorageConnectionString",
-                "value": "[parameters('configurationStorageConnectionString')]"
-              },
-              {
-                "name": "APPINSIGHTS_INSTRUMENTATIONKEY",
-                "value": "[reference('employer-accounts-api-application-insights').outputs.InstrumentationKey.value]"
-              },
               {
                 "name": "LoggingRedisConnectionString",
                 "value": "[parameters('loggingRedisConnectionString')]"
@@ -211,67 +254,180 @@
               {
                 "name": "LoggingRedisKey",
                 "value": "[parameters('loggingRedisKey')]"
+              },
+              {
+                "name": "ConfigurationStorageConnectionString",
+                "value": "[parameters('configurationStorageConnectionString')]"
+              },
+              {
+                "name": "EnvironmentName",
+                "value": "[parameters('environmentName')]"
+              },
+              {
+                "name": "InstrumentationKey",
+                "value": "[reference('api-app-insights').outputs.InstrumentationKey.value]"
               }
             ]
           },
           "customHostName": {
-            "value": ""
+            "value": "[parameters('apiCustomHostname')]"
           },
           "certificateThumbprint": {
-            "value": ""
+            "value": "[if(greater(length(parameters('apiCertificateName')), 0), reference('api-ssl-cert').outputs.certificateThumbprint.value, '')]"
+          }
+        }
+      },
+      "dependsOn": [
+        "web-app-service-plan"
+      ]
+    },
+    {
+      "apiVersion": "2017-08-01",
+      "name": "worker-app-service-plan",
+      "type": "Microsoft.Resources/deployments",
+      "properties": {
+        "mode": "Incremental",
+        "templateLink": {
+          "uri": "[concat(variables('deploymentUrlBase'),'app-service-plan.json')]",
+          "contentVersion": "1.0.0.0"
+        },
+        "parameters": {
+          "appServicePlanName": {
+            "value": "[variables('workerAppServicePlanName')]"
+          },
+          "aspSize": {
+            "value": "1"
+          },
+          "aspInstances": {
+            "value": 1
+          },
+          "nonASETier": {
+            "value": "Standard"
           }
         }
       }
     },
     {
-      "apiVersion": "2017-05-10",
-      "name": "employer-accounts-sql-database",
+      "apiVersion": "2017-08-01",
+      "name": "web-app-service-plan",
       "type": "Microsoft.Resources/deployments",
-      "resourceGroup": "[parameters('sharedResourceGroup')]",
       "properties": {
         "mode": "Incremental",
         "templateLink": {
-          "uri": "[concat(variables('deploymentUrlBase'),'sql-database.json')]",
+          "uri": "[concat(variables('deploymentUrlBase'),'app-service-plan.json')]",
           "contentVersion": "1.0.0.0"
         },
         "parameters": {
-          "employerAccountsDatabaseName": {
-            "value": "[variables('employerAccountsDatabaseName')]"
+          "appServicePlanName": {
+            "value": "[variables('webAppServicePlanName')]"
           },
-          "sqlServerName": {
-            "value": "[parameters('sharedSqlServerName')]"
+          "aspSize": {
+            "value": "1"
           },
-          "databaseSkuName": {
-            "value": "[parameters('databaseSkuName')]"
+          "aspInstances": {
+            "value": 2
           },
-          "databaseTier": {
-            "value": "[parameters('databaseTier')]"
+          "nonASETier": {
+            "value": "Standard"
+          }
+        }
+      }
+    },
+    {
+      "apiVersion": "2017-08-01",
+      "name": "worker-app-service",
+      "type": "Microsoft.Resources/deployments",
+      "properties": {
+        "mode": "Incremental",
+        "templateLink": {
+          "uri": "[concat(variables('deploymentUrlBase'),'app-service.json')]",
+          "contentVersion": "1.0.0.0"
+        },
+        "parameters": {
+          "appServiceName": {
+            "value": "[variables('workerAppServiceName')]"
           },
-          "logAnalyticsSubscriptionId": {
-            "value": "[parameters('logAnalyticsSubscriptionId')]"
+          "appServicePlanName": {
+            "value": "[variables('workerAppServicePlanName')]"
           },
-          "logAnalyticsResourceGroup": {
-            "value": "[parameters('logAnalyticsResourceGroup')]"
+          "appServicePlanResourceGroup": {
+            "value": "[resourceGroup().name]"
           },
-          "logAnalyticsWorkspaceName": {
-            "value": "[parameters('logAnalyticsWorkspaceName')]"
+          "appServiceAppSettings": {
+            "value": [
+              {
+                "name": "LoggingRedisConnectionString",
+                "value": "[parameters('loggingRedisConnectionString')]"
+              },
+              {
+                "name": "LoggingRedisKey",
+                "value": "[parameters('loggingRedisKey')]"
+              },
+              {
+                "name": "ConfigurationStorageConnectionString",
+                "value": "[parameters('configurationStorageConnectionString')]"
+              },
+              {
+                "name": "EnvironmentName",
+                "value": "[parameters('environmentName')]"
+              },
+              {
+                "name": "StorageConnectionString",
+                "value": "[parameters('storageConnectionString')]"
+              }
+            ]
+          },
+          "appServiceConnectionStrings": {
+            "value": [
+              {
+                "name": "AzureWebJobsDashboard",
+                "connectionString": "[parameters('storageConnectionString')]",
+                "type": "Custom"
+              },
+              {
+                "name": "AzureWebJobsStorage",
+                "connectionString": "[parameters('storageConnectionString')]",
+                "type": "Custom"
+              }
+            ]
+          },
+          "deployStagingSlot": {
+            "value": false
+          }
+        }
+      },
+      "dependsOn": [
+        "worker-app-service-plan"
+      ]
+    },
+    {
+      "apiVersion": "2017-08-01",
+      "name": "cosmos-db",
+      "type": "Microsoft.Resources/deployments",
+      "properties": {
+        "mode": "Incremental",
+        "templateLink": {
+          "uri": "[concat(variables('deploymentUrlBase'),'cosmos-db.json')]",
+          "contentVersion": "1.0.0.0"
+        },
+        "parameters": {
+          "cosmosDbName": {
+            "value": "[variables('accountsCosmosDbName')]"
+          },
+          "cosmosDbType": {
+            "value": "GlobalDocumentDB"
+          },
+          "defaultConsistencyLevel": {
+            "value": "Strong"
           }
         }
       }
     }
   ],
   "outputs": {
-    "employerAccountsDatabaseName": {
+    "AccountsCosmosDbPrimaryMasterKey": {
       "type": "string",
-      "value": "[variables('employerAccountsDatabaseName')]"
-    },
-    "employerAccountsWebAppServiceName": {
-      "type": "string",
-      "value": "[variables('employerAccountsWebAppServiceName')]"
-    },
-    "employerAccountsApiAppServiceName": {
-      "type": "string",
-      "value": "[variables('employerAccountsApiAppServiceName')]"
+      "value": "[reference('cosmos-db').outputs.PrimaryMasterKey.value]"
     }
   }
 }
