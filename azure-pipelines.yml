@@ -47,6 +47,14 @@ steps:
     configuration: '$(buildConfiguration)'
     clean: true
 
+- task: CopyFiles@2
+  displayName: 'Copy Files to: $(build.artifactstagingdirectory)'
+  inputs:
+    Contents: |
+     azure\**
+    TargetFolder: '$(build.artifactstagingdirectory)'
+    OverWrite: true
+
 - task: PublishBuildArtifacts@1
   displayName: 'Publish Artifact: SFA.DAS.EmployerAccounts'
   inputs:
