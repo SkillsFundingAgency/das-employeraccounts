@@ -51,10 +51,31 @@
     "sharedAppServicePlanName": {
       "type": "string"
     },
-    "sharedAppServicePlanResourceGroup": {
+    "sharedResourceGroup": {
       "type": "string"
     },
     "idpTokenCertificateName": {
+      "type": "string"
+    },
+    "sharedSqlServerName": {
+      "type": "string"
+    },
+    "databaseSkuName": {
+      "type": "string",
+      "defaultValue": "S0"
+    },
+    "databaseTier": {
+      "type": "string",
+      "defaultValue": "Standard"
+    },
+    "logAnalyticsSubscriptionId": {
+      "type": "string",
+      "defaultValue": "[subscription().subscriptionId]"
+    },
+    "logAnalyticsResourceGroup": {
+      "type": "string"
+    },
+    "logAnalyticsWorkspaceName": {
       "type": "string"
     }
   },
@@ -65,7 +86,8 @@
     "apiAppServiceName": "[concat(variables('resourceNamePrefix'), 'api-as')]",
     "workerAppServiceName": "[concat(variables('resourceNamePrefix'), 'wkr-as')]",
     "workerAppServicePlanName": "[concat(variables('resourceNamePrefix'), 'wkr-asp')]",
-    "accountsCosmosDbName": "[concat(variables('resourceNamePrefix'), '-cdb')]"
+    "accountsCosmosDbName": "[concat(variables('resourceNamePrefix'), '-cdb')]",
+    "databaseName": "[concat('das-', parameters('resourceEnvironmentName'), '-eas-', parameters('serviceName'), '-db')]"
   },
   "resources": [
     {
@@ -112,7 +134,7 @@
       "apiVersion": "2017-08-01",
       "name": "ui-ssl-cert",
       "condition": "[greater(length(parameters('uiCertificateName')), 0)]",
-      "resourceGroup": "[parameters('sharedAppServicePlanResourceGroup')]",
+      "resourceGroup": "[parameters('sharedResourceGroup')]",
       "type": "Microsoft.Resources/deployments",
       "properties": {
         "mode": "Incremental",
@@ -131,7 +153,7 @@
             "value": "[parameters('sharedKeyVaultResourceGroup')]"
           },
           "serverFarmId": {
-            "value": "[resourceId(parameters('sharedAppServicePlanResourceGroup'), 'Microsoft.Web/serverfarms', parameters('sharedAppServicePlanName'))]"
+            "value": "[resourceId(parameters('sharedResourceGroup'), 'Microsoft.Web/serverfarms', parameters('sharedAppServicePlanName'))]"
           }
         }
       }
@@ -140,7 +162,7 @@
       "apiVersion": "2017-08-01",
       "name": "api-ssl-cert",
       "condition": "[greater(length(parameters('apiCertificateName')), 0)]",
-      "resourceGroup": "[parameters('sharedAppServicePlanResourceGroup')]",
+      "resourceGroup": "[parameters('sharedResourceGroup')]",
       "type": "Microsoft.Resources/deployments",
       "properties": {
         "mode": "Incremental",
@@ -159,7 +181,7 @@
             "value": "[parameters('sharedKeyVaultResourceGroup')]"
           },
           "serverFarmId": {
-            "value": "[resourceId(parameters('sharedAppServicePlanResourceGroup'), 'Microsoft.Web/serverfarms', parameters('sharedAppServicePlanName'))]"
+            "value": "[resourceId(parameters('sharedResourceGroup'), 'Microsoft.Web/serverfarms', parameters('sharedAppServicePlanName'))]"
           }
         }
       },
@@ -170,7 +192,7 @@
     {
       "apiVersion": "2017-08-01",
       "name": "token-ssl-cert",
-      "resourceGroup": "[parameters('sharedAppServicePlanResourceGroup')]",
+      "resourceGroup": "[parameters('sharedResourceGroup')]",
       "type": "Microsoft.Resources/deployments",
       "properties": {
         "mode": "Incremental",
@@ -189,7 +211,7 @@
             "value": "[parameters('sharedKeyVaultResourceGroup')]"
           },
           "serverFarmId": {
-            "value": "[resourceId(parameters('sharedAppServicePlanResourceGroup'), 'Microsoft.Web/serverfarms', parameters('sharedAppServicePlanName'))]"
+            "value": "[resourceId(parameters('sharedResourceGroup'), 'Microsoft.Web/serverfarms', parameters('sharedAppServicePlanName'))]"
           }
         }
       },
@@ -215,7 +237,7 @@
             "value": "[parameters('sharedAppServicePlanName')]"
           },
           "appServicePlanResourceGroup": {
-            "value": "[parameters('sharedAppServicePlanResourceGroup')]"
+            "value": "[parameters('sharedResourceGroup')]"
           },
           "appServiceAppSettings": {
             "value": [
@@ -280,7 +302,7 @@
             "value": "[parameters('sharedAppServicePlanName')]"
           },
           "appServicePlanResourceGroup": {
-            "value": "[parameters('sharedAppServicePlanResourceGroup')]"
+            "value": "[parameters('sharedResourceGroup')]"
           },
           "appServiceAppSettings": {
             "value": [
@@ -430,6 +452,42 @@
           }
         }
       }
+    },
+    {
+      "apiVersion": "2017-05-10",
+      "name": "sql-database",
+      "type": "Microsoft.Resources/deployments",
+      "resourceGroup": "[parameters('sharedResourceGroup')]",
+      "properties": {
+        "mode": "Incremental",
+        "templateLink": {
+          "uri": "[concat(variables('deploymentUrlBase'),'sql-database.json')]",
+          "contentVersion": "1.0.0.0"
+        },
+        "parameters": {
+          "databaseName": {
+            "value": "[variables('databaseName')]"
+          },
+          "sqlServerName": {
+            "value": "[parameters('sharedSqlServerName')]"
+          },
+          "databaseSkuName": {
+            "value": "[parameters('databaseSkuName')]"
+          },
+          "databaseTier": {
+            "value": "[parameters('databaseTier')]"
+          },
+          "logAnalyticsSubscriptionId": {
+            "value": "[parameters('logAnalyticsSubscriptionId')]"
+          },
+          "logAnalyticsResourceGroup": {
+            "value": "[parameters('logAnalyticsResourceGroup')]"
+          },
+          "logAnalyticsWorkspaceName": {
+            "value": "[parameters('logAnalyticsWorkspaceName')]"
+          }
+        }
+      }
     }
   ],
   "outputs": {
@@ -448,6 +506,10 @@
     "accountsCosmosDbName": {
       "type": "string",
       "value": "[variables('accountsCosmosDbName')]"
+    },
+    "accountsDatabaseName": {
+      "type": "string",
+      "value": "[variables('databaseName')]"
     }
   }
 }
