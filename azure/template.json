@@ -503,6 +503,10 @@
       "type": "string",
       "value": "[variables('apiAppServiceName')]"
     },
+    "workerAppServiceName": {
+      "type": "string",
+      "value": "[variables('workerAppServiceName')]"
+    },
     "accountsCosmosDbName": {
       "type": "string",
       "value": "[variables('accountsCosmosDbName')]"
