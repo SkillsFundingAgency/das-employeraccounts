@@ -48,6 +48,12 @@
     "sharedKeyVaultResourceGroup": {
       "type": "string"
     },
+    "sharedAppServicePlanName": {
+      "type": "string"
+    },
+    "sharedAppServicePlanResourceGroup": {
+      "type": "string"
+    },
     "idpTokenCertificateName": {
       "type": "string"
     }
@@ -58,7 +64,6 @@
     "uiAppServiceName": "[concat(variables('resourceNamePrefix'), 'ui-as')]",
     "apiAppServiceName": "[concat(variables('resourceNamePrefix'), 'api-as')]",
     "workerAppServiceName": "[concat(variables('resourceNamePrefix'), 'wkr-as')]",
-    "webAppServicePlanName": "[concat(variables('resourceNamePrefix'), '-asp')]",
     "workerAppServicePlanName": "[concat(variables('resourceNamePrefix'), 'wkr-asp')]",
     "accountsCosmosDbName": "[concat(variables('resourceNamePrefix'), '-cdb')]"
   },
@@ -107,6 +112,7 @@
       "apiVersion": "2017-08-01",
       "name": "ui-ssl-cert",
       "condition": "[greater(length(parameters('uiCertificateName')), 0)]",
+      "resourceGroup": "[parameters('sharedAppServicePlanResourceGroup')]",
       "type": "Microsoft.Resources/deployments",
       "properties": {
         "mode": "Incremental",
@@ -125,7 +131,7 @@
             "value": "[parameters('sharedKeyVaultResourceGroup')]"
           },
           "serverFarmId": {
-            "value": "[reference('web-app-service-plan').outputs.appServicePlanId.value]"
+            "value": "[resourceId(parameters('sharedAppServicePlanResourceGroup'), 'Microsoft.Web/serverfarms', parameters('sharedAppServicePlanName'))]"
           }
         }
       }
@@ -134,6 +140,7 @@
       "apiVersion": "2017-08-01",
       "name": "api-ssl-cert",
       "condition": "[greater(length(parameters('apiCertificateName')), 0)]",
+      "resourceGroup": "[parameters('sharedAppServicePlanResourceGroup')]",
       "type": "Microsoft.Resources/deployments",
       "properties": {
         "mode": "Incremental",
@@ -152,7 +159,7 @@
             "value": "[parameters('sharedKeyVaultResourceGroup')]"
           },
           "serverFarmId": {
-            "value": "[reference('web-app-service-plan').outputs.appServicePlanId.value]"
+            "value": "[resourceId(parameters('sharedAppServicePlanResourceGroup'), 'Microsoft.Web/serverfarms', parameters('sharedAppServicePlanName'))]"
           }
         }
       },
@@ -163,6 +170,7 @@
     {
       "apiVersion": "2017-08-01",
       "name": "token-ssl-cert",
+      "resourceGroup": "[parameters('sharedAppServicePlanResourceGroup')]",
       "type": "Microsoft.Resources/deployments",
       "properties": {
         "mode": "Incremental",
@@ -181,7 +189,7 @@
             "value": "[parameters('sharedKeyVaultResourceGroup')]"
           },
           "serverFarmId": {
-            "value": "[reference('web-app-service-plan').outputs.appServicePlanId.value]"
+            "value": "[resourceId(parameters('sharedAppServicePlanResourceGroup'), 'Microsoft.Web/serverfarms', parameters('sharedAppServicePlanName'))]"
           }
         }
       },
@@ -204,10 +212,10 @@
             "value": "[variables('uiAppServiceName')]"
           },
           "appServicePlanName": {
-            "value": "[variables('webAppServicePlanName')]"
+            "value": "[parameters('sharedAppServicePlanName')]"
           },
           "appServicePlanResourceGroup": {
-            "value": "[resourceGroup().name]"
+            "value": "[parameters('sharedAppServicePlanResourceGroup')]"
           },
           "appServiceAppSettings": {
             "value": [
@@ -252,10 +260,7 @@
             "value": "[if(greater(length(parameters('uiCertificateName')), 0), reference('ui-ssl-cert').outputs.certificateThumbprint.value, '')]"
           }
         }
-      },
-      "dependsOn": [
-        "web-app-service-plan"
-      ]
+      }
     },
     {
       "apiVersion": "2017-08-01",
@@ -272,10 +277,10 @@
             "value": "[variables('apiAppServiceName')]"
           },
           "appServicePlanName": {
-            "value": "[variables('webAppServicePlanName')]"
+            "value": "[parameters('sharedAppServicePlanName')]"
           },
           "appServicePlanResourceGroup": {
-            "value": "[resourceGroup().name]"
+            "value": "[parameters('sharedAppServicePlanResourceGroup')]"
           },
           "appServiceAppSettings": {
             "value": [
@@ -308,10 +313,7 @@
             "value": "[if(greater(length(parameters('apiCertificateName')), 0), reference('api-ssl-cert').outputs.certificateThumbprint.value, '')]"
           }
         }
-      },
-      "dependsOn": [
-        "web-app-service-plan"
-      ]
+      }
     },
     {
       "apiVersion": "2017-08-01",
@@ -332,32 +334,6 @@
           },
           "aspInstances": {
             "value": 1
-          },
-          "nonASETier": {
-            "value": "Standard"
-          }
-        }
-      }
-    },
-    {
-      "apiVersion": "2017-08-01",
-      "name": "web-app-service-plan",
-      "type": "Microsoft.Resources/deployments",
-      "properties": {
-        "mode": "Incremental",
-        "templateLink": {
-          "uri": "[concat(variables('deploymentUrlBase'),'app-service-plan.json')]",
-          "contentVersion": "1.0.0.0"
-        },
-        "parameters": {
-          "appServicePlanName": {
-            "value": "[variables('webAppServicePlanName')]"
-          },
-          "aspSize": {
-            "value": "1"
-          },
-          "aspInstances": {
-            "value": 2
           },
           "nonASETier": {
             "value": "Standard"
