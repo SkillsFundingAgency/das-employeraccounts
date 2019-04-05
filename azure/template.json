@@ -468,6 +468,10 @@
     "apiAppServiceName": {
       "type": "string",
       "value": "[variables('apiAppServiceName')]"
+    },
+    "accountsCosmosDbName": {
+      "type": "string",
+      "value": "[variables('accountsCosmosDbName')]"
     }
   }
 }
