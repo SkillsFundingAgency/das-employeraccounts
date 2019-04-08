@@ -47,11 +47,22 @@ steps:
     configuration: '$(buildConfiguration)'
     clean: true
 
+- task: VSBuild@1
+  displayName: 'Build DACPAC'
+  inputs:
+    solution: 'src\SFA.DAS.EAS.Employer_Account.Database\SFA.DAS.EAS.Employer_Account.Database.sqlproj'
+    vsVersion: 15.0
+    msbuildArgs: '/p:DeployOnBuild=true /p:WebPublishMethod=Package /p:PackageAsSingleFile=true /p:SkipInvalidConfigurations=true /p:PackageLocation="$(build.artifactstagingdirectory)\DeploymentPackages\\"'
+    platform: '$(buildPlatform)'
+    configuration: '$(buildConfiguration)'
+    clean: true
+
 - task: CopyFiles@2
   displayName: 'Copy Files to: $(build.artifactstagingdirectory)'
   inputs:
     Contents: |
      azure\**
+     src\**\*.dacpac
     TargetFolder: '$(build.artifactstagingdirectory)'
     OverWrite: true
 
